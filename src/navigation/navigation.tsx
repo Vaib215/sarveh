@@ -2,10 +2,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
-import { useSelector } from "react-redux";
-import { useLoginStatus  } from "../hooks";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import SignUpScreen from "../screens/auth/SignUpScreen";
+import HomeScreen from "../screens";
+import SignInScreen from "../screens/auth/SignInScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,23 +15,6 @@ interface ILoginStatus {
 }
 
 const HomeStack = () => {
-  const { status } = useLoginStatus();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (status !== "") {
-      setIsLoading(false);
-    }
-  }, [status]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -41,7 +24,7 @@ const HomeStack = () => {
     >
       <Stack.Screen
         name="Home"
-        component={Home}
+        component={HomeScreen}
         options={{
           headerShown: false,
         }}
@@ -53,7 +36,32 @@ const HomeStack = () => {
 export default function Home() {
   return (
     <NavigationContainer>
-      <HomeStack />
+      <SignedIn>
+        <HomeStack />
+      </SignedIn>
+      <SignedOut>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+          initialRouteName="SignUp"
+        >
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </SignedOut>
     </NavigationContainer>
   );
 }

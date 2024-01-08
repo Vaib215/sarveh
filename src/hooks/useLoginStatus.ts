@@ -1,14 +1,14 @@
-import { useSelector } from "react-redux";
+import { useAuth } from "@clerk/clerk-expo";
 
 interface ILoginStatus {
-  status: boolean | string;
+  isSignedIn: boolean;
 }
 
 const useLoginStatus = (): ILoginStatus => {
-  const status = useSelector((state: any) => state.auth.status);
+  const { isSignedIn } = useAuth();
 
   return {
-    status: status,
+    isSignedIn,
   };
 };
 
