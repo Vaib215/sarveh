@@ -7,6 +7,7 @@ import SignUpScreen from "../screens/auth/SignUpScreen";
 import HomeScreen from "../screens";
 import SignInScreen from "../screens/auth/SignInScreen";
 import OnboardingScreen from "../screens/auth/OnboardingScreen";
+import ProfileCompletion from "../screens/auth/ProfileCompletion";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,8 +41,9 @@ const AuthStack = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Onboarding"
-    >
+      // initialRouteName="Onboarding"
+      >
+      <Stack.Screen name="ProfileCompletion" component={ProfileCompletion} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
