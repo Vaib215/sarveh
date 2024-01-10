@@ -1,25 +1,26 @@
-import * as React from "react";
-import { TextInput } from "react-native";
+import { ActivityIndicator, TextInput, ToastAndroid } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Button, Text, View, Heading, Input } from "tamagui";
 import { BaseView } from "../../components/layout/BaseView";
 import LottieView from "lottie-react-native";
+import React from "react";
 
 export default function SignUpScreen({ navigation }) {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const [loading, setLoading] = React.useState(false);
 
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
 
-  // start the sign up process.
   const onSignUpPress = async () => {
     if (!isLoaded && !signUp) return null;
 
     try {
+      setLoading(true);
       await signUp.create({
-        phoneNumber: '+91'+phoneNumber,
-        password: phoneNumber,
+        phoneNumber: "+91" + phoneNumber,
+        password: "+91" + phoneNumber,
       });
 
       // send the email.
@@ -28,7 +29,9 @@ export default function SignUpScreen({ navigation }) {
       // change the UI to our pending section.
       setPendingVerification(true);
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
+      ToastAndroid.show(err.errors[0].message, ToastAndroid.SHORT);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,6 +42,7 @@ export default function SignUpScreen({ navigation }) {
     }
 
     try {
+      setLoading(true);
       const { status, createdSessionId } =
         await signUp.attemptPhoneNumberVerification({
           code,
@@ -48,7 +52,9 @@ export default function SignUpScreen({ navigation }) {
       }
       await setActive({ session: createdSessionId });
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
+      ToastAndroid.show(err.errors[0].message, ToastAndroid.SHORT);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,10 +87,13 @@ export default function SignUpScreen({ navigation }) {
             className="text-lg h-14"
           />
           <Button
-            className="text-lg h-14 mt-4 font-bold bg-purple-700 text-white"
+            className={`text-lg h-14 mt-4 font-bold text-white ${
+              phoneNumber.length === 10 ? "bg-purple-700" : ""
+            }`}
             onPress={onSignUpPress}
+            disabled={phoneNumber.length !== 10}
           >
-            Send OTP
+            {loading ? <ActivityIndicator color="white" /> : "Send code"}
           </Button>
         </View>
       ) : (
@@ -101,10 +110,12 @@ export default function SignUpScreen({ navigation }) {
             />
           </View>
           <Button
-            className="text-lg h-14 mt-4 font-bold bg-purple-700 text-white"
+            className={`text-lg h-14 mt-4 font-bold bg-purple-700 text-white ${
+              code.length === 6 ? "bg-purple-700" : ""
+            }`}
             onPress={onPressVerify}
           >
-            Verify
+            {loading ? <ActivityIndicator color="white" /> : "Verify"}
           </Button>
         </View>
       )}
