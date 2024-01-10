@@ -23,10 +23,8 @@ export default function SignUpScreen({ navigation }) {
         password: "+91" + phoneNumber,
       });
 
-      // send the email.
       await signUp.preparePhoneNumberVerification();
 
-      // change the UI to our pending section.
       setPendingVerification(true);
     } catch (err: any) {
       ToastAndroid.show(err.errors[0].message, ToastAndroid.SHORT);
@@ -35,7 +33,6 @@ export default function SignUpScreen({ navigation }) {
     }
   };
 
-  // This verifies the user using email code that is delivered.
   const onPressVerify = async () => {
     if (!isLoaded) {
       return;
