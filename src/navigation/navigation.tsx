@@ -6,6 +6,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import SignUpScreen from "../screens/auth/SignUpScreen";
 import HomeScreen from "../screens";
 import SignInScreen from "../screens/auth/SignInScreen";
+import OnboardingScreen from "../screens/auth/OnboardingScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,21 @@ const HomeStack = () => {
   );
 };
 
+const AuthStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName="Onboarding"
+    >
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+    </Stack.Navigator>
+  );
+};
+
 export default function Home() {
   return (
     <NavigationContainer>
@@ -40,27 +56,7 @@ export default function Home() {
         <HomeStack />
       </SignedIn>
       <SignedOut>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-          initialRouteName="SignUp"
-        >
-          <Stack.Screen
-            name="SignUp"
-            component={SignUpScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="SignIn"
-            component={SignInScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
+        <AuthStack />
       </SignedOut>
     </NavigationContainer>
   );

@@ -57,7 +57,7 @@ export default function App() {
     >
       <Provider store={store}>
         <StatusBar style="auto" />
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1}}>
           <TamaguiProvider config={tamaguiConfig}>
             <Theme name="purple">
               <ClerkProvider

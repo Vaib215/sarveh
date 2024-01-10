@@ -1,9 +1,11 @@
 import * as React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
-import { Button } from "tamagui";
+import { Button, Text, View, Heading, Input } from "tamagui";
+import { BaseView } from "../../components/layout/BaseView";
+import LottieView from "lottie-react-native";
 
-export default function SignUpScreen({navigation}) {
+export default function SignUpScreen({ navigation }) {
   const { isLoaded, signUp, setActive } = useSignUp();
 
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -12,11 +14,11 @@ export default function SignUpScreen({navigation}) {
 
   // start the sign up process.
   const onSignUpPress = async () => {
-    if (!isLoaded && !signUp) return null
+    if (!isLoaded && !signUp) return null;
 
     try {
       await signUp.create({
-        phoneNumber,
+        phoneNumber: '+91'+phoneNumber,
         password: phoneNumber,
       });
 
@@ -37,11 +39,12 @@ export default function SignUpScreen({navigation}) {
     }
 
     try {
-      const {status, createdSessionId} = await signUp.attemptPhoneNumberVerification({
-        code,
-      });
-      if(status!=="complete") {
-        throw new Error("Sign up failed.")
+      const { status, createdSessionId } =
+        await signUp.attemptPhoneNumberVerification({
+          code,
+        });
+      if (status !== "complete") {
+        throw new Error("Sign up failed.");
       }
       await setActive({ session: createdSessionId });
     } catch (err: any) {
@@ -50,37 +53,67 @@ export default function SignUpScreen({navigation}) {
   };
 
   return (
-    <View>
-      <Text>Signup</Text>
-      {!pendingVerification && (
-        <View>
-          <TextInput
-            autoCapitalize="none"
+    <BaseView>
+      <Heading className="mx-auto mt-4 font-normal" color={"purple"}>
+        Create an account
+      </Heading>
+      <LottieView
+        style={{
+          flex: 1,
+          transform: [{ scale: 1.5 }],
+        }}
+        source={require("../../../assets/animations/guard.json")}
+        autoPlay
+        loop
+      />
+      {!pendingVerification ? (
+        <View className="mx-2">
+          <Text className="text-lg text-center mb-4">
+            Enter your phone number and we will send you a verification code.
+          </Text>
+          <Input
             value={phoneNumber}
-            placeholder="Phone..."
+            placeholder="Enter your phone number"
             onChangeText={(phone) => setPhoneNumber(phone)}
             autoComplete="tel"
+            maxLength={10}
+            keyboardType="phone-pad"
+            className="text-lg h-14"
           />
-          <TouchableOpacity onPress={onSignUpPress}>
-            <Text>Send OTP</Text>
-          </TouchableOpacity>
-          <Button onPress={() => navigation.navigate("SignIn")}>Sign In Instead</Button>
+          <Button
+            className="text-lg h-14 mt-4 font-bold bg-purple-700 text-white"
+            onPress={onSignUpPress}
+          >
+            Send OTP
+          </Button>
         </View>
-      )}
-      {pendingVerification && (
+      ) : (
         <View>
           <View>
-            <TextInput
+            <Input
               value={code}
-              placeholder="Code..."
+              placeholder="Enter your code"
               onChangeText={(code) => setCode(code)}
+              autoComplete="sms-otp"
+              keyboardType="number-pad"
+              maxLength={6}
+              className="text-lg h-14"
             />
           </View>
-          <TouchableOpacity onPress={onPressVerify}>
-            <Text>Verify OTP</Text>
-          </TouchableOpacity>
+          <Button
+            className="text-lg h-14 mt-4 font-bold bg-purple-700 text-white"
+            onPress={onPressVerify}
+          >
+            Verify
+          </Button>
         </View>
       )}
-    </View>
+      <Button
+        className="text-lg h-14 font-bold bg-white text-purple-700"
+        onPress={() => navigation.navigate("SignIn")}
+      >
+        Login to existing account
+      </Button>
+    </BaseView>
   );
 }
