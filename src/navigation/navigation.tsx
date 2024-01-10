@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import SignUpScreen from "../screens/auth/SignUpScreen";
 import HomeScreen from "../screens";
 import SignInScreen from "../screens/auth/SignInScreen";
@@ -17,12 +17,13 @@ interface ILoginStatus {
 }
 
 const HomeStack = () => {
+  const { isSignedIn } = useUser();
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Home"
+      initialRouteName={"Home"}
     >
       <Stack.Screen
         name="Home"
@@ -31,6 +32,7 @@ const HomeStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="ProfileCompletion" component={ProfileCompletion} />
     </Stack.Navigator>
   );
 };
@@ -42,8 +44,7 @@ const AuthStack = () => {
         headerShown: false,
       }}
       // initialRouteName="Onboarding"
-      >
-      <Stack.Screen name="ProfileCompletion" component={ProfileCompletion} />
+    >
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />

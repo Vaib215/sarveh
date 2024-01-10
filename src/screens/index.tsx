@@ -1,6 +1,8 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import React from "react";
 import { View } from "react-native";
-import { Button } from "tamagui";
+import { Button, Heading, Text } from "tamagui";
+import { BaseView } from "../components/layout/BaseView";
 
 const SignOut = () => {
   const { isLoaded, signOut } = useAuth();
@@ -20,12 +22,26 @@ const SignOut = () => {
   );
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: { navigation: any }) => {
+  const { user } = useUser();
+
+  if (!user?.firstName) {
+    return (
+      <View
+        onLayout={() => {
+          navigation.navigate("ProfileCompletion");
+        }}
+      ></View>
+    );
+  }
+
   return (
-    <View className="">
-      <Button> Hello</Button>
+    <BaseView>
+      <Heading>
+        Hello, {user?.firstName}
+      </Heading>
       <SignOut />
-    </View>
+    </BaseView>
   );
 };
 
